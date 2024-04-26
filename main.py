@@ -9,7 +9,7 @@ def get_weather(city):
     response = requests.get(url)
     data = response.json()
     if "main" in data and "temp" in data["main"]:
-        return data["main"]["temp"], data["name"], round(float(data["main"]["temp_max"]) - 273.15, 1)
+        return float(data["main"]["temp"]), data["name"], round(float(data["main"]["temp_max"]) - 273.15, 1)
     else:
         return None, None
 
@@ -26,7 +26,7 @@ weather_stream = spark \
     .format("rate") \
     .option("rowsPerSecond", 1) \
     .load() \
-    .withColumn("temperature", lit(get_weather("Paris")[0]).cast(DoubleType())) \
+    .withColumn("temperature", lit(get_weather("Paris")[0])) \
     .withColumn("city", lit(get_weather("Paris")[1])) \
     .withColumn("temp_max", lit(get_weather("Paris")[2]))
 
